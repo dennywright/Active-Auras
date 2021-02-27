@@ -61,9 +61,9 @@ Hooks.on("ready", () => {
         const AuraTab = game.i18n.format("ACTIVEAURAS.tabname");
         const FormCheckHeight = game.i18n.format("ACTIVEAURAS.FORM_Height");
 
-        const tab = `<a class="item" data-tab="ActiveAuras"><i class="fas fa-broadcast-tower"></i> ${AuraTab}</a>`;
+      const tab = `<a class="item" data-tab="ActiveAuras"><i class="fas fa-broadcast-tower"></i> ${AuraTab}</a>`;
 
-        const contents = `
+    const contents = `
         <div class="tab" data-tab="ActiveAuras">
             <div class="form-group">
                 <label>${FormIsAura}?</label>
@@ -460,14 +460,57 @@ Hooks.on("ready", () => {
     }
 
     /**
-  * 
-  * @param {Token} token - token to apply effect too
-  * @param {ActiveEffect} effectData - effect data to generate effect
-  */
-    async function CreateActiveEffect(tokenID, oldEffectData) {
+     * 
+     * @param {s} string 
+     * https://stackoverflow.com/questions/49015815/check-if-string-is-a-mathematical-expression-in-javascript
+     */
+    function isExpression(s)
+    {
+        const re = /(?:(?:^|[-+_*/])(?:\s*-?\d+(\.\d+)?(?:[eE][+-]?\d+)?\s*))+$/;
+        return re.test(s);
+    }
+
+    /**
+     * @param {newChanges} newChanges 
+     * @param {oldChanges} oldChanges 
+     * @returns true if new change is greater than old change
+     * Assuming the changes are in the same order
+     * Assuming @ fields have been evaluated (might not be on owner of aura)
+     * Look for key that parses as an expression
+     * For example, in Aura of Protection: data.bonuses.abilities.save = "+ 3"
+     * @todo add absolute value works for negative auras
+     */
+    function morePotentEffect(newChanges, oldChanges) {
+        let result = false;
+        for (i = 0; i < newChanges.length; i++) {
+            if (newChanges[i].key === oldChanges[i].key) {
+                if (isExpression(newChanges[i].value) && isExpression(oldChanges[i].value)) {
+                    if (eval(newChanges[i].value) >= eval(oldChanges[i].value)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * 
+     * @param {Token} token - token to apply effect too
+     * @param {ActiveEffect} effectData - effect data to generate effect
+     */
+    async function CreateActiveEffect(tokenID, newEffectData) {
         let token = canvas.tokens.get(tokenID)
-        if (token.actor.effects.entries.find(e => e.data.label === oldEffectData.label)) return;
-        let effectData = duplicate(oldEffectData)
+        let oldEffectData = token.actor.effects.entries.find(e => e.data.label === newEffectData.label)
+        if (oldEffectData !== undefined) {
+            if (morePotentEffect(newEffectData.changes, oldEffectData.changes)) {
+                RemoveActiveEffects(token, oldEffectData.label);
+            } else {
+                return;
+            }
+        }
+        let effectData = duplicate(newEffectData)
         if (effectData.flags.ActiveAuras?.isMacro) {
             for (let change of effectData.changes) {
                 let newValue = change.value;
