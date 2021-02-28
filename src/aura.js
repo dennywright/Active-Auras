@@ -480,7 +480,7 @@ Hooks.on("ready", () => {
      * For example, in Aura of Protection: data.bonuses.abilities.save = "+ 3"
      * @todo add absolute value works for negative auras
      */
-    function morePotentEffect(newChanges, oldChanges) {
+    function isMorePotentEffect(newChanges, oldChanges) {
         let result = false;
         for (i = 0; i < newChanges.length; i++) {
             if (newChanges[i].key === oldChanges[i].key) {
@@ -504,7 +504,7 @@ Hooks.on("ready", () => {
         let token = canvas.tokens.get(tokenID)
         let oldEffectData = token.actor.effects.entries.find(e => e.data.label === newEffectData.label)
         if (oldEffectData !== undefined) {
-            if (morePotentEffect(newEffectData.changes, oldEffectData.changes)) {
+            if (isMorePotentEffect(newEffectData.changes, oldEffectData.changes)) {
                 RemoveActiveEffects(token, oldEffectData.label);
             } else {
                 return;
