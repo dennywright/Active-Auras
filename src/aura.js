@@ -691,7 +691,7 @@ Hooks.on("ready", () => {
                 return;
             }
         }
-        if (newEffectData.flags[MODULE_NAME].save !== "") {
+        if (newEffectData.flags[MODULE_NAME].save !== undefined && newEffectData.flags[MODULE_NAME].save !== "") {
             const flavor = `${CONFIG.DND5E.abilities[newEffectData.flags[MODULE_NAME].save]} DC${newEffectData.flags[MODULE_NAME].savedc} ${newEffectData.label || ""}`;
             let saveRoll = (await token.actor.rollAbilitySave(newEffectData.flags[MODULE_NAME].save, { flavor }));
             if (saveRoll && (saveRoll.total >= newEffectData.flags[MODULE_NAME].savedc)) {
