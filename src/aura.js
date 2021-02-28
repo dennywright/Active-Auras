@@ -662,11 +662,13 @@ Hooks.on("ready", () => {
         for (i = 0; i < newChanges.length; i++) {
             if (newChanges[i].key === oldChanges[i].key) {
                 if (newChanges[i].priority > oldChanges[i].priority) {
+                    if (debug) console.log(`newChange is higher priority: ${newChanges[i].priority} > ${oldChanges[i].priority}`)
                     result = true;
                     break;
                 }
                 if (isExpression(newChanges[i].value) && isExpression(oldChanges[i].value)) {
                     if (eval(newChanges[i].value) > eval(oldChanges[i].value)) {
+                        if (debug) console.log(`newChange is more potent: ${newChanges[i].value} > ${oldChanges[i].value}`)
                         result = true;
                         break;
                     }
