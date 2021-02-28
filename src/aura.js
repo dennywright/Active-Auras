@@ -685,10 +685,10 @@ Hooks.on("ready", () => {
      */
     async function CreateActiveEffect(tokenID, newEffectData) {
         let token = canvas.tokens.get(tokenID)
-        let oldEffectData = token.actor.effects.entries.find(e => e.data.label === newEffectData.label)
-        if (oldEffectData !== undefined) {
-            if (isMorePotentEffect(newEffectData.changes, oldEffectData.changes)) {
-                RemoveActiveEffects(token, oldEffectData.label);
+        let oldEffect = token.actor.effects.entries.find(e => e.data.label === newEffectData.label)
+        if (oldEffect !== undefined) {
+            if (isMorePotentEffect(newEffectData.changes, oldEffect.data.changes)) {
+                RemoveActiveEffects(tokenID, oldEffect.data.label);
             } else {
                 return;
             }
