@@ -473,7 +473,7 @@ Hooks.on("ready", () => {
     /**
      * @param {newChanges} newChanges 
      * @param {oldChanges} oldChanges 
-     * @returns true if new change is greater than old change
+     * @returns true if a new change is higher priority or more potent than old change
      * Assuming the changes are in the same order
      * Assuming @ fields have been evaluated (might not be on owner of aura)
      * Look for key that parses as an expression
@@ -484,8 +484,12 @@ Hooks.on("ready", () => {
         let result = false;
         for (i = 0; i < newChanges.length; i++) {
             if (newChanges[i].key === oldChanges[i].key) {
+                if (newChanges[i].priority > oldChanges[i].priority) {
+                    result = true;
+                    break;
+                }
                 if (isExpression(newChanges[i].value) && isExpression(oldChanges[i].value)) {
-                    if (eval(newChanges[i].value) >= eval(oldChanges[i].value)) {
+                    if (eval(newChanges[i].value) > eval(oldChanges[i].value)) {
                         result = true;
                         break;
                     }
