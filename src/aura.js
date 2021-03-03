@@ -644,7 +644,7 @@ Hooks.on("ready", () => {
     async function CreateActiveEffect(tokenID, oldEffectData) {
         let token = canvas.tokens.get(tokenID)
         if (token.actor.effects.entries.find(e => e.data.label === oldEffectData.label)) return;
-        if (oldEffectData.flags[MODULE_NAME].save !== undefined && oldEffectData.flags[MODULE_NAME].save !== "") {
+        if (oldEffectData.flags[MODULE_NAME]?.save) {
             const flavor = `${CONFIG.DND5E.abilities[oldEffectData.flags[MODULE_NAME].save]} DC${oldEffectData.flags[MODULE_NAME].savedc} ${oldEffectData.label || ""}`;
             let saveRoll = (await token.actor.rollAbilitySave(oldEffectData.flags[MODULE_NAME].save, { flavor }));
             if (saveRoll && (saveRoll.total >= oldEffectData.flags[MODULE_NAME].savedc)) {
