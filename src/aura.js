@@ -641,7 +641,7 @@ Hooks.on("ready", () => {
      * @param {s} string 
      * https://stackoverflow.com/questions/49015815/check-if-string-is-a-mathematical-expression-in-javascript
      */
-    function isExpression(s)
+    function IsExpression(s)
     {
         const re = /(?:(?:^|[-+_*/])(?:\s*-?\d+(\.\d+)?(?:[eE][+-]?\d+)?\s*))+$/;
         return re.test(s);
@@ -653,11 +653,11 @@ Hooks.on("ready", () => {
      * @returns true if a new change is more potent than old change
      * @todo check for negative auras
      */
-    function isMorePotentEffect(newChanges, oldChanges) {
+    function IsMorePotentEffect(newChanges, oldChanges) {
         let result = false;
         for (i = 0; i < newChanges.length; i++) {
             if (newChanges[i].key === oldChanges[i].key) {
-                if (isExpression(newChanges[i].value) && isExpression(oldChanges[i].value)) {
+                if (IsExpression(newChanges[i].value) && IsExpression(oldChanges[i].value)) {
                     if (eval(newChanges[i].value) > eval(oldChanges[i].value)) {
                         if (debug) console.log(`newChange is more potent: ${newChanges[i].value} > ${oldChanges[i].value}`)
                         result = true;
@@ -678,13 +678,13 @@ Hooks.on("ready", () => {
         let token = canvas.tokens.get(tokenID)
         let oldEffect = token.actor.effects.entries.find(e => e.data.label === newEffectData.label)
         if (oldEffect !== undefined) {
-            if (isMorePotentEffect(newEffectData.changes, oldEffect.data.changes)) {
+            if (IsMorePotentEffect(newEffectData.changes, oldEffect.data.changes)) {
                 RemoveActiveEffects(tokenID, oldEffect.data.label);
             } else {
                 return;
             }
         }
-        if (newEffectData.flags[MODULE_NAME].save !== undefined && newEffectData.flags[MODULE_NAME].save !== "") {
+        if (newEffectData.flags[MODULE_NAME]?.save) {
             const flavor = `${CONFIG.DND5E.abilities[newEffectData.flags[MODULE_NAME].save]} DC${newEffectData.flags[MODULE_NAME].savedc} ${newEffectData.label || ""}`;
             let saveRoll = (await token.actor.rollAbilitySave(newEffectData.flags[MODULE_NAME].save, { flavor }));
             if (saveRoll && (saveRoll.total >= newEffectData.flags[MODULE_NAME].savedc)) {
